@@ -60,6 +60,8 @@ int OnCalculate(const int rates_total, const int prev_calculated,
    const double &close[], const long &tick_volume[],
    const long &volume[], const int &spread[]) {
    
+   ArraySetAsSeries( close, true );
+   
    // Need a minimum number of available rates to function
    if (rates_total < InpPeriod) return (0);
    
@@ -72,6 +74,10 @@ int OnCalculate(const int rates_total, const int prev_calculated,
    //Copying the MA data to highValues and lowValues
    double highValues[];
    double lowValues[];
+   
+   ArraySetAsSeries( highValues, true );
+   ArraySetAsSeries( lowValues, true );
+   
    CopyBuffer(HighHandle, 0, 0, limit + 1, highValues);
    CopyBuffer(LowHandle, 0, 0, limit + 1, lowValues);
    
@@ -86,4 +92,3 @@ int OnCalculate(const int rates_total, const int prev_calculated,
    
    return (rates_total);
 }
-
