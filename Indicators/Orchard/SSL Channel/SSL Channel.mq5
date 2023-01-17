@@ -30,9 +30,6 @@ double LeadingBuffer[];
 double TrailingBuffer[];
 double DirectionBuffer[];
 
-double highValues[];
-double lowValues[];
-
 // Housekeeping
    int HighHandle,LowHandle;
    
@@ -49,9 +46,6 @@ double lowValues[];
       
       SetIndexBuffer( 2, DirectionBuffer );
       ArraySetAsSeries( DirectionBuffer, true );
-      
-      ArraySetAsSeries( highValues, true );
-      ArraySetAsSeries( lowValues, true );
         
       HighHandle = iMA(Symbol(), Period(), InpPeriod, 0, MODE_SMA, PRICE_HIGH);
       LowHandle = iMA(Symbol(), Period(), InpPeriod, 0, MODE_SMA, PRICE_LOW);
@@ -66,8 +60,6 @@ int OnCalculate(const int rates_total, const int prev_calculated,
    const double &close[], const long &tick_volume[],
    const long &volume[], const int &spread[]) {
    
-   ArraySetAsSeries( close, true );
-   
    // Need a minimum number of available rates to function
    if (rates_total < InpPeriod) return (0);
    
@@ -78,6 +70,8 @@ int OnCalculate(const int rates_total, const int prev_calculated,
    int limit = ( prev_calculated == 0 ) ? rates_total - InpPeriod - 1 : rates_total - prev_calculated;
    
    //Copying the MA data to highValues and lowValues
+   double highValues[];
+   double lowValues[];
    CopyBuffer(HighHandle, 0, 0, limit + 1, highValues);
    CopyBuffer(LowHandle, 0, 0, limit + 1, lowValues);
    
@@ -85,7 +79,6 @@ int OnCalculate(const int rates_total, const int prev_calculated,
    for (int i = limit; i >= 0; i--) {
       double hi = highValues[i];
       double lo = lowValues[i];
-      
       DirectionBuffer[i] = close[i] > hi ? 1 : close[i] < lo ? -1 : DirectionBuffer[i + 1];
       LeadingBuffer[i] = DirectionBuffer[i] < 0 ? lo : hi;
       TrailingBuffer[i] = DirectionBuffer[i] > 0 ? lo : hi;
@@ -93,3 +86,4 @@ int OnCalculate(const int rates_total, const int prev_calculated,
    
    return (rates_total);
 }
+
